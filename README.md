@@ -17,7 +17,6 @@
 ```bash
   cd backend
 ```
-
 2) Скопіювати .env.example → .env і налаштувати:
 
     - DATABASE_URL (PostgreSQL)
