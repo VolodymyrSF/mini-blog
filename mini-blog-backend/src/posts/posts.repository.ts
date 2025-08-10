@@ -1,6 +1,4 @@
-/**
- * PostsRepository — абстрагує Prisma для роботи з постами.
- */
+
 
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
@@ -27,7 +25,6 @@ export class PostsRepository {
     }
 
     async deleteOwnPost(id: string, userId: string) {
-        // Використовуємо deleteMany, щоб уникнути помилок доступу; перевірка count
         return this.prisma.post.deleteMany({ where: { id, userId } });
     }
 }

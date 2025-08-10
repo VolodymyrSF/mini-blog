@@ -1,11 +1,3 @@
-/**
- * @GetUser() decorator
- * Витягує user з request (після Passport JwtStrategy).
- *
- * Використання:
- * @GetUser() user
- * або @GetUser('userId') userId
- */
 
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 

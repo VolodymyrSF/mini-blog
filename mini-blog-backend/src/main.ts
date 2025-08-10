@@ -19,7 +19,6 @@ async function bootstrap() {
     app.use(cookieParser());
     app.use(helmet({ crossOriginResourcePolicy: false }));
     app.use(
-        '/api/auth',
         rateLimit.default({
             windowMs: 15 * 60 * 1000,
             max: 500,

@@ -1,6 +1,3 @@
-/**
- * PostEntity — plain entity for responses (used to type return shapes).
- */
 
 export class PostEntity {
     id: string;

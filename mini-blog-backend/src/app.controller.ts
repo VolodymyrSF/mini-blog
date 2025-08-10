@@ -1,7 +1,3 @@
-/**
- * Basic application controller.
- * Містить кореневий маршрут для перевірки статусу сервера.
- */
 
 import { Controller, Get } from '@nestjs/common';
 

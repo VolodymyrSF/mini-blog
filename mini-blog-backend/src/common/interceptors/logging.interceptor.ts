@@ -1,9 +1,4 @@
-/**
- * Simple request/response logging interceptor.
- * Логування запитів/відповідей (метод, шлях, статус, час виконання).
- *
- * У prod можна замінити на більш серйозне логування (Winston, Pino).
- */
+
 
 import {
     Injectable,

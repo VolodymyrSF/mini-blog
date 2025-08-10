@@ -1,6 +1,3 @@
-/**
- * PostsModule — реєструє PostsController, PostsService та PostsRepository.
- */
 
 import { Module } from '@nestjs/common';
 import { PostsController } from './posts.controller';

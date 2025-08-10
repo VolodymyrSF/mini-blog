@@ -1,7 +1,4 @@
-/**
- * Zustand store для керування станом користувача.
- * Зберігає інформацію про авторизацію та методи логіну/логауту.
- */
+
 import { create } from 'zustand';
 import { getMeApi, loginApi, logoutApi, refreshApi } from '@/lib/api';
 
@@ -43,7 +40,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             await logoutApi();
             set({ user: null });
         } catch {
-            // ігноруємо помилки
+
         }
     },
 

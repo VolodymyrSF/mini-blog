@@ -1,7 +1,4 @@
-/**
- * PrismaService wraps PrismaClient and implements Nest lifecycle hooks.
- * Це забезпечує автоматичне підключення/відключення при старті/зупинці модуля.
- */
+
 
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';

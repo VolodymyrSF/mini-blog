@@ -1,7 +1,3 @@
-/**
- * UsersService — бізнес-логіка над UsersRepository.
- * Сервіс інжектиться в AuthService.
- */
 
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';

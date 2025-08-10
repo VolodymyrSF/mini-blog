@@ -9,12 +9,10 @@ export const useRequireAuth = () => {
     const router = useRouter();
 
     useEffect(() => {
-        // Запускаємо fetchMe один раз при монтуванні
         fetchMe();
     }, [fetchMe]);
 
     useEffect(() => {
-        // Якщо вже завантажено, але юзер не залогінений — редірект на логін
         if (!loading && user === null) {
             router.push('/login');
         }

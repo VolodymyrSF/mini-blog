@@ -1,7 +1,4 @@
-/**
- * Лендінг / редірект.
- * Якщо користувач залогінений — веде на dashboard, інакше на login.
- */
+
 'use client';
 
 import { useEffect } from 'react';

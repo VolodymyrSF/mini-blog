@@ -1,8 +1,4 @@
-/**
- * Centralized configuration loader.
- * Використовуємо ConfigModule.forRoot(load: [configuration]).
- * Повертає typed конфіг.
- */
+
 
 export default () => ({
     port: parseInt(process.env.PORT || '3000', 10),

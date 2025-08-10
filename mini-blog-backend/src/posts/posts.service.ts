@@ -1,7 +1,4 @@
-/**
- * PostsService — бізнес-логіка над постами.
- * Гарантує, що користувач може працювати тільки зі своїми постами.
- */
+
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';

@@ -1,13 +1,3 @@
-/**
- * AuthController:
- * - /auth/register
- * - /auth/login
- * - /auth/refresh
- * - /auth/logout
- * - /auth/me
- *
- * Використовує AuthService для логіки.
- */
 
 import {
     Body,
@@ -58,7 +48,6 @@ export class AuthController {
 
     @Post('login')
     async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
-        try {
             const tokens = await this.authService.login(dto.email, dto.password);
 
             const accessMaxAge = this.configService.get<number>('jwt.accessExpMs');
@@ -80,10 +69,7 @@ export class AuthController {
             });
 
             return { message: 'Login successful' };
-        } catch (error) {
-            console.error('🔥 Error in login controller:', error);
-            throw error;
-        }
+
     }
 
 
@@ -98,7 +84,7 @@ export class AuthController {
         const accessMaxAge = this.configService.get<number>('jwt.accessExpMs');
         const refreshMaxAge = this.configService.get<number>('jwt.refreshExpMs');
 
-        // Новий accessToken
+
         res.cookie('accessToken', tokens.accessToken, {
             httpOnly: true,
             secure: false,
@@ -106,7 +92,7 @@ export class AuthController {
             maxAge: accessMaxAge,
         });
 
-        // Новий refreshToken
+
         res.cookie('refreshToken', tokens.refreshToken, {
             httpOnly: true,
             secure: false,
@@ -119,8 +105,8 @@ export class AuthController {
     }
 
     @Post('logout')
-    @UseGuards(JwtAuthGuard) // ОБОВ’ЯЗКОВО, інакше нема user
-    @ApiCookieAuth() // Щоб Swagger знав, що треба токен
+    @UseGuards(JwtAuthGuard)
+    @ApiCookieAuth()
     @ApiOperation({ summary: 'Logout (invalidate refresh token)' })
     async logout(@GetUser('userId') userId: string, @Res({ passthrough: true }) res: Response) {
         await this.authService.logout(userId);

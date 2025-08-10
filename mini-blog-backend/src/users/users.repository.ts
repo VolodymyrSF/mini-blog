@@ -1,8 +1,4 @@
-/**
- * UsersRepository — data access через Prisma.
- * Використовуємо DI: PrismaService інжектиться.
- * Репозиторій абстрагує доступ до БД, відповідає за операції CRUD.
- */
+
 
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';

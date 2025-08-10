@@ -1,14 +1,3 @@
-/**
- * AuthService — вся логіка аутентифікації:
- * - реєстрація
- * - логін
- * - генерація токенів (access + refresh)
- * - refresh token rotation and verification
- * - logout (видалення refresh token)
- *
- * Стратегія зберігання refresh token: зберігаємо **хеш** refresh token в базі.
- * При refresh — порівнюємо bcrypt.compare(provided, storedHash).
- */
 
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
@@ -25,7 +14,7 @@ export class AuthService {
     ) {}
 
 
-    // Перевіряємо email/password
+
     async validateUser(email: string, password: string) {
         const user = await this.usersService.findByEmail(email);
         if (!user) throw new UnauthorizedException('Invalid credentials');
@@ -36,7 +25,6 @@ export class AuthService {
         return user;
     }
 
-    // Реєстрація: хеш пароля, створити юзера
     async register(dto: { email: string; password: string; name: string }) {
         const existing = await this.usersService.findByEmail(dto.email);
         if (existing) throw new ConflictException('Email already in use');
@@ -44,11 +32,11 @@ export class AuthService {
         const hashed = await bcrypt.hash(dto.password, 10);
         const user = await this.usersService.create({ ...dto, password: hashed });
 
-        // Не створюємо токени автоматично (можна змінити під вимогу)
+
         return { id: user.id, email: user.email, name: user.name, createdAt: user.createdAt };
     }
 
-    // Генеруємо access + refresh
+
 
     async generateTokens(user: { id: string; email: string, name: string }) {
         const payload = { sub: user.id, email: user.email,name: user.name };
@@ -68,19 +56,19 @@ export class AuthService {
     }
 
 
-    // Логін: повертаємо токени + зберігаємо хеш refresh token
+
     async login(email: string, password: string) {
         const user = await this.validateUser(email, password);
         const tokens = await this.generateTokens({ id: user.id, email: user.email, name: user.name});
 
-        // Хешуємо refresh token і зберігаємо
+
         const refreshHash = await bcrypt.hash(tokens.refreshToken, 10);
         await this.usersService.setCurrentRefreshToken(user.id, refreshHash);
 
         return tokens;
     }
 
-    // Refresh: verify token signature, перевірити що збережений хеш відповідає
+
     async refreshTokens(refreshToken: string) {
         try {
             const payload = this.jwtService.verify(refreshToken, {
@@ -93,7 +81,7 @@ export class AuthService {
             const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
             if (!isValid) throw new UnauthorizedException('Access denied');
 
-            // Generate new tokens and persist new refresh hash (rotation)
+
             const tokens = await this.generateTokens({ id: user.id, email: user.email, name: user.name});
             const newHash = await bcrypt.hash(tokens.refreshToken, 10);
             await this.usersService.setCurrentRefreshToken(user.id, newHash);
@@ -105,7 +93,7 @@ export class AuthService {
         }
     }
 
-    // Logout: видаляємо refresh token з бази
+
     async logout(userId: string) {
         await this.usersService.removeRefreshToken(userId);
     }

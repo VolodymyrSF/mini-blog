@@ -1,14 +1,4 @@
-/**
- * Global HTTP exception filter.
- * Форматує відповіді з uniform shape:
- * {
- *   statusCode: number,
- *   message: string | string[],
- *   timestamp: string
- * }
- *
- * Це гарантує однаковий формат помилок у всьому API.
- */
+
 
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
@@ -31,7 +21,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
                 timestamp: new Date().toISOString(),
             });
         } else {
-            // Unhandled exceptions
             response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
                 statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: 'Internal server error',

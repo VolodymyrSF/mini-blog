@@ -1,7 +1,4 @@
-/**
- * Хук для роботи з постами через TanStack Query.
- * Виносимо всю логіку запитів сюди, щоб компоненти були чистими.
- */
+
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';

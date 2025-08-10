@@ -1,7 +1,4 @@
-/**
- * UsersModule — реєструє UsersService та UsersRepository.
- * Експортує UsersService для AuthModule (щоб AuthService міг інжектитись).
- */
+
 
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';

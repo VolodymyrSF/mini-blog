@@ -1,12 +1,9 @@
-/**
- * Axios інстанс + API виклики.
- * Тут зберігаємо базову конфігурацію та хелпери для запитів.
- */
+
 import axios from 'axios';
 
 const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
-    withCredentials: true // важливо для cookie з токенами
+    withCredentials: true
 });
 
 // ===== AUTH =====

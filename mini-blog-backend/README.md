@@ -26,7 +26,12 @@ Production-ready minimal blog backend: Auth (access + refresh tokens), Users, Po
 ```bash
   npm run seed
 ```
-7. Запусти сервер:
+7. Зробити build:
+
+```bash
+  npm run build
+```
+8. Запустити сервер
 
 ```bash
   npm run start

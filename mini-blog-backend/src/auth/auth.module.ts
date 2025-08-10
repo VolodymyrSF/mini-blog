@@ -1,7 +1,3 @@
-/**
- * AuthModule: реєструє JwtModule (access token default), Passport, та підключає UsersModule.
- * JwtService використовується для створення access & refresh (refresh опції передаємо при sign).
- */
 
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
@@ -15,7 +11,6 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
 @Module({
     imports: [
         PassportModule,
-        // JwtModule з дефолтними налаштуваннями для access token
         JwtModule.registerAsync({
             imports: [ConfigModule],
             inject: [ConfigService],

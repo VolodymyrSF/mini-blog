@@ -1,6 +1,4 @@
-/**
- * PaginationQueryDto — простий пагінаційний DTO.
- */
+
 
 import { Type } from 'class-transformer';
 import { IsOptional, IsPositive } from 'class-validator';

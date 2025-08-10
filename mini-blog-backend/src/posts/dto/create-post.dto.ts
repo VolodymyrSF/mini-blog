@@ -1,6 +1,4 @@
-/**
- * CreatePostDto — валідація для створення поста.
- */
+
 
 import { IsNotEmpty, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';

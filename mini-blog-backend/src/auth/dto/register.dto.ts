@@ -1,7 +1,3 @@
-/**
- * Register DTO — валідація вхідних даних при реєстрації.
- * Використовується class-validator + Swagger ApiProperty.
- */
 
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';

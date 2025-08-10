@@ -1,6 +1,4 @@
-/**
- * CreateUserDto — використовується тільки для створення користувача.
- */
+
 
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
