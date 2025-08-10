@@ -1,14 +1,3 @@
-/**
- * Entry point for the application.
- * - Global validation pipe (DTO validation)
- * - Global exception filter (uniform error responses)
- * - Global logging interceptor (request/response logs)
- * - Security middlewares: helmet, rate limiter, compression
- * - Swagger setup
- *
- * Використовувати ts-node-dev для деву: `npm run start:dev`
- */
-
 import { NestFactory } from '@nestjs/core';
 import 'reflect-metadata';
 import { AppModule } from './app.module';
@@ -23,21 +12,34 @@ import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule, { cors: true });
-    const logger = new Logger('Bootstrap');
+    const app = await NestFactory.create(AppModule);
+    const configService = app.get(ConfigService);
+    const port = configService.get<number>('port') || 3000;
 
-    // Basic security middlewares
     app.use(cookieParser());
-    app.use(helmet());
+    app.use(helmet({ crossOriginResourcePolicy: false }));
     app.use(
+        '/api/auth',
         rateLimit.default({
-            windowMs: 15 * 60 * 1000, // 15 minutes
-            max: 100, // limit each IP to 100 requests per windowMs
+            windowMs: 15 * 60 * 1000,
+            max: 500,
         }),
     );
     app.use(compression());
 
-    // Global validation pipe: whitelisting removes unknown props
+
+    app.enableCors({
+        origin: 'http://localhost:3002',
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
+    });
+
+
+
+
     app.useGlobalPipes(
         new ValidationPipe({
             whitelist: true,
@@ -46,15 +48,8 @@ async function bootstrap() {
         }),
     );
 
-    // Global exception filter
     app.useGlobalFilters(new HttpExceptionFilter());
-
-    // Logging interceptor
     app.useGlobalInterceptors(new LoggingInterceptor());
-
-    // Swagger
-    const configService = app.get(ConfigService);
-    const port = configService.get<number>('port') || 3000;
 
     const swaggerConfig = new DocumentBuilder()
         .setTitle('Mini-Blog API')
@@ -65,10 +60,8 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup('/api', app, document);
 
-    // Global route prefix
-    //app.setGlobalPrefix('api');
-
     await app.listen(port);
+    const logger = new Logger('Bootstrap');
     logger.log(`Application listening on http://localhost:${port}`);
     logger.log(`Swagger available at http://localhost:${port}/api`);
 }

@@ -24,6 +24,7 @@ export class AuthService {
         private configService: ConfigService,
     ) {}
 
+
     // Перевіряємо email/password
     async validateUser(email: string, password: string) {
         const user = await this.usersService.findByEmail(email);
@@ -48,24 +49,27 @@ export class AuthService {
     }
 
     // Генеруємо access + refresh
+
     async generateTokens(user: { id: string; email: string, name: string }) {
         const payload = { sub: user.id, email: user.email,name: user.name };
 
+
         const accessToken = await this.jwtService.signAsync(payload, {
             secret: this.configService.get<string>('jwt.accessSecret'),
-            expiresIn: this.configService.get<string>('jwt.accessExp'),
+            expiresIn: this.configService.get<string>('jwt.accessExpMs'),
         });
 
         const refreshToken = await this.jwtService.signAsync(payload, {
             secret: this.configService.get<string>('jwt.refreshSecret'),
-            expiresIn: this.configService.get<string>('jwt.refreshExp'),
+            expiresIn: this.configService.get<string>('jwt.refreshExpMs'),
         });
 
         return { accessToken, refreshToken };
     }
 
+
     // Логін: повертаємо токени + зберігаємо хеш refresh token
-    async login(email: string, password: string,name:string) {
+    async login(email: string, password: string) {
         const user = await this.validateUser(email, password);
         const tokens = await this.generateTokens({ id: user.id, email: user.email, name: user.name});
 
@@ -97,6 +101,7 @@ export class AuthService {
             return tokens;
         } catch (e) {
             throw new UnauthorizedException('Invalid refresh token');
+
         }
     }
 

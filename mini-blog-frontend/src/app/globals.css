@@ -1,0 +1,28 @@
+/* globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply bg-gray-50 text-gray-900;
+}
+
+.btn {
+    @apply flex items-center space-x-2 px-5 py-3 rounded-md font-semibold shadow-md transition;
+}
+
+.btn-green {
+    @apply bg-green-600 text-white hover:bg-green-700;
+}
+
+.btn-blue {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.btn-red {
+    @apply bg-red-600 text-white hover:bg-red-700;
+}
+
+.btn-disabled {
+    @apply opacity-50 cursor-not-allowed;
+}

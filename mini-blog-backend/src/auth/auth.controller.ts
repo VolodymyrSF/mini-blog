@@ -22,15 +22,17 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {ApiTags, ApiOperation, ApiBearerAuth, ApiCookieAuth} from '@nestjs/swagger';
 import { GetUser } from '../common/decorators/get-user.decorator';
 import { Response, Request } from 'express';
 import {JwtUser} from "../common/types/user-from-jwt.interface";
+import {ConfigService} from "@nestjs/config";
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService,
+    private configService: ConfigService,) {}
 
     @Post('register')
     @ApiOperation({ summary: 'Register a new user' })
@@ -55,27 +57,35 @@ export class AuthController {
      */
 
     @Post('login')
-    @ApiOperation({ summary: 'Login and receive tokens' })
     async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
-        const tokens = await this.authService.login(dto.email, dto.password);
+        try {
+            const tokens = await this.authService.login(dto.email, dto.password);
 
-        // Встановлюємо refresh token в httpOnly cookie
-        res.cookie('refreshToken', tokens.refreshToken, {
-            httpOnly: true,
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 днів
-            path: '/auth/refresh', // cookie доступний лише на цьому шляху
-        });
+            const accessMaxAge = this.configService.get<number>('jwt.accessExpMs');
+            const refreshMaxAge = this.configService.get<number>('jwt.refreshExpMs');
 
-        // 🔥 Set accessToken
-        res.cookie('accessToken', tokens.accessToken, {
-            httpOnly: true, // або false, якщо фронту треба читати
-            sameSite: 'strict',
-            maxAge: 15 * 60 * 1000, // 15 хв
-        });
+            res.cookie('refreshToken', tokens.refreshToken, {
+                httpOnly: true,
+                secure: false,
+                sameSite: 'lax',
+                maxAge: refreshMaxAge,
+                path: '/auth/refresh',
+            });
 
-        return { message: 'Login successful' };
+            res.cookie('accessToken', tokens.accessToken, {
+                httpOnly: true,
+                secure: false,
+                sameSite: 'lax',
+                maxAge: accessMaxAge,
+            });
+
+            return { message: 'Login successful' };
+        } catch (error) {
+            console.error('🔥 Error in login controller:', error);
+            throw error;
+        }
     }
+
 
     @Post('refresh')
     @ApiOperation({ summary: 'Rotate tokens using refresh token' })
@@ -85,31 +95,43 @@ export class AuthController {
 
         const tokens = await this.authService.refreshTokens(refreshToken);
 
-        // Оновлюємо refresh token в cookie
+        const accessMaxAge = this.configService.get<number>('jwt.accessExpMs');
+        const refreshMaxAge = this.configService.get<number>('jwt.refreshExpMs');
+
+        // Новий accessToken
+        res.cookie('accessToken', tokens.accessToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax',
+            maxAge: accessMaxAge,
+        });
+
+        // Новий refreshToken
         res.cookie('refreshToken', tokens.refreshToken, {
             httpOnly: true,
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
+            secure: false,
+            sameSite: 'lax',
+            maxAge: refreshMaxAge,
             path: '/auth/refresh',
         });
 
-        // Віддаємо новий access token
-        return { refreshToken: tokens.refreshToken };
+        return { message: 'Tokens refreshed' };
     }
 
     @Post('logout')
     @UseGuards(JwtAuthGuard) // ОБОВ’ЯЗКОВО, інакше нема user
-    @ApiBearerAuth() // Щоб Swagger знав, що треба токен
+    @ApiCookieAuth() // Щоб Swagger знав, що треба токен
     @ApiOperation({ summary: 'Logout (invalidate refresh token)' })
     async logout(@GetUser('userId') userId: string, @Res({ passthrough: true }) res: Response) {
         await this.authService.logout(userId);
-        res.clearCookie('refreshToken', { path: '/auth/refresh' });
+        res.clearCookie('refreshToken', { path: '/auth/refresh', secure: false, sameSite: 'lax' });
+        res.clearCookie('accessToken', { httpOnly: true, secure: false, sameSite: 'lax' });
         return { message: 'Logged out' };
     }
 
     @Get('me')
     @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiCookieAuth()
     @ApiOperation({ summary: 'Get current user info (from access token)' })
     me(@GetUser() user: JwtUser) {
         return user;

@@ -37,10 +37,20 @@ export class PostsController {
 
     @Get()
     @ApiOperation({ summary: 'Get your own posts (paginated)' })
-    getAll(@Request() req:RequestWithUser, @Query() query: PaginationQueryDto) {
+    async getAll(@Request() req: RequestWithUser, @Query() query: PaginationQueryDto) {
         const userId = req.user.userId;
-        return this.postsService.getOwn(userId, query);
+        const { data, meta } = await this.postsService.getOwn(userId, query);
+
+        const totalPages = Math.ceil(meta.total / meta.limit) || 0;
+
+        return {
+            posts: data,
+            totalPages,
+            currentPage: meta.page,
+        };
     }
+
+
 
     @Delete(':id')
     @ApiOperation({ summary: 'Delete your own post' })

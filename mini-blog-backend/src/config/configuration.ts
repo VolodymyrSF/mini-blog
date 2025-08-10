@@ -12,7 +12,7 @@ export default () => ({
     jwt: {
         accessSecret: process.env.JWT_ACCESS_SECRET || 'access-secret',
         refreshSecret: process.env.JWT_REFRESH_SECRET || 'refresh-secret',
-        accessExp: process.env.JWT_ACCESS_EXP || '15m',
-        refreshExp: process.env.JWT_REFRESH_EXP || '7d',
-    },
+        accessExpMs: parseInt(process.env.JWT_ACCESS_EXP_MS || '900000', 10), // 15 хв у мс
+        refreshExpMs: parseInt(process.env.JWT_REFRESH_EXP_MS || '604800000', 10), // 7 днів у мс
+},
 });
